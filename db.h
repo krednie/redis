@@ -5,17 +5,16 @@
 #include <string>
 #include "value.h"
 
-using namespace std;
+class Db {
+private:
+    std::unordered_map<std::string, Value> bucketstore;
 
-class Db{
-    private: 
-    unordered_map<string, Value> bucketstore;
-
-    public: 
-    void set(const string &key, const string &value);
-    bool get(const string &key);
-    bool del(const string &key);
-    bool exists (const string &key);
+public:
+    void set(const std::string& key, const std::string& value);
+    bool get(const std::string& key);
+    bool del(const std::string& key);
+    bool exists(const std::string& key);
+    bool incr(const std::string &key);
 };
 
 #endif

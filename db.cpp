@@ -1,30 +1,37 @@
 #include "db.h"
 #include <iostream>
 
-void Db::set(const std::string& key, const std::string& value) {
-    bucketstore[key] = Value(value); 
+void Db::set(const std::string& key, const std::string& value)
+{
+    bucketstore[key] = Value(value);
     std::cout << "OK" << std::endl;
 }
 
-bool Db::get(const std::string& key) {
+bool Db::get(const std::string& key)
+{
     auto it = bucketstore.find(key);
     if (it == bucketstore.end()) {
         std::cout << "nil" << std::endl;
         return false;
     }
 
-    Value& v = it->second;
+    Value &v = it->second;
 
-    if (v.type != ValueType::STRING) {
-        std::cout << "(error) WRONGTYPE" << std::endl;
-        return false;
+    if (v.type == ValueType::STRING) {
+        std::cout << v.str << std::endl;
+        return true;
     }
+    else if (v.type == ValueType::INTEGER)
+    {
+        std::cout << v.integer << std::endl;
+        return true;
+    }
+    return false;
 
-    std::cout << v.str << std::endl;
-    return true;
 }
 
-bool Db::del(const std::string& key) {
+bool Db::del(const std::string& key)
+{
     auto it = bucketstore.find(key);
     if (it == bucketstore.end()) {
         std::cout << "(integer) 0" << std::endl;
@@ -36,12 +43,37 @@ bool Db::del(const std::string& key) {
     return true;
 }
 
-bool Db::exists(const std::string& key) {
+bool Db::exists(const std::string& key)
+{
     if (bucketstore.find(key) == bucketstore.end()) {
         std::cout << "(integer) 0" << std::endl;
         return false;
     }
 
     std::cout << "(integer) 1" << std::endl;
+    return true;
+}
+
+bool Db::incr(const std::string &key)
+{
+    auto it = bucketstore.find(key);
+
+    if (it == bucketstore.end()) 
+    {
+        bucketstore[key] = Value(1);
+        std::cout << "(integer) 1" << std::endl;
+        return true;
+    }
+
+    Value &v = it->second;
+
+    if (v.type != ValueType::INTEGER) 
+    {
+        std::cout << "(error) WRONGTYPE" << std::endl;
+        return false;
+    }
+
+    v.integer += 1;
+    std::cout << "(integer) " << v.integer << std::endl;
     return true;
 }
